@@ -14,9 +14,9 @@ public class MainProgram {
         String ANSI_PURPLE = "\u001B[35m";
         String ANSI_GREEN = "\u001B[36m";
         String ANSI_WHITE = "\u001B[39m";
-        CubeRubikConsole cube = new CubeRubikConsole(4, false,
+        CubeRubikConsole cube = new CubeRubikConsole(3, true,
                 ANSI_RED + "R", ANSI_YELLOW + "Y", ANSI_BLUE + "B", ANSI_PURPLE + "P", ANSI_GREEN + "G", ANSI_WHITE + "W");
-        cube.showSidesInConsole();
+        cube.showSidesInConsoleOnBaseOfStateOfSide();
         while (true) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             System.out.print(ANSI_RESET + "Введите через пробел ось (x,y,z), нач. и кон. слой: ");
@@ -24,7 +24,7 @@ public class MainProgram {
             if ("x".equals(data[0])) cube.rotateClockwise(CubeRubik.Axis.X, Integer.parseInt(data[1]), Integer.parseInt(data[2]));
             if ("y".equals(data[0])) cube.rotateClockwise(CubeRubik.Axis.Y, Integer.parseInt(data[1]), Integer.parseInt(data[2]));
             if ("z".equals(data[0])) cube.rotateClockwise(CubeRubik.Axis.Z, Integer.parseInt(data[1]), Integer.parseInt(data[2]));
-            cube.showSidesInConsole();
+            cube.showSidesInConsoleOnBaseOfStateOfSide();
         }
     }
 }

@@ -27,31 +27,23 @@ public class CubeRubik<T> {
                     throw new IllegalArgumentException("Все значения должны быть одного типа");
         this.n = n;
         sidesMain = new int[6][n][n];
-        if (!isRandom) {
-            for (int i = 0; i < 6; i++)
-                for (int j = 0; j < n; j++)
-                    for (int k = 0; k < n; k++)
-                        sidesMain[i][j][k] = i;
-        }
-        else {
-            int[] array = new int[6 * n * n];
-            for (int i = 0; i < 6; i++)
-                for (int j = 0; j < n * n; j++)
-                    array[i * n * n + j] = i;
-            Random rnd = new Random();
-            for (int i = 0; i < 6 * n * n; i++) {
-                int j1 = rnd.nextInt(6 * n * n);
-                int j2 = rnd.nextInt(6 * n * n);
-                int temp = array[j1];
-                array[j1] = array[j2];
-                array[j2] = temp;
-            }
-            for (int i = 0; i < 6; i++)
-                for (int j = 0; j < n; j++)
-                    for (int k = 0; k < n; k++)
-                        sidesMain[i][j][k] = array[i * n * n + j * n + k];
-        }
+        for (int i = 0; i < 6; i++)
+            for (int j = 0; j < n; j++)
+                for (int k = 0; k < n; k++)
+                    sidesMain[i][j][k] = i;
         setSidesForAxisRotation();
+        if (isRandom) {
+            Random rnd = new Random();
+            for (int i = 0; i < 10; i++) {
+                int layer = rnd.nextInt(n) + 1;
+                int indexOfAxis = rnd.nextInt(3) + 1;
+                switch (indexOfAxis) {
+                    case 1: rotateClockwise(Axis.X, layer, layer); break;
+                    case 2: rotateClockwise(Axis.Y, layer, layer); break;
+                    default: rotateClockwise(Axis.Z, layer, layer);
+                }
+            }
+        }
     }
 
     private void setSidesForAxisRotation () {
@@ -221,17 +213,31 @@ public class CubeRubik<T> {
         setSidesForAxisRotation();
     }
 
-    public T getColor(Side side, int x, int y) {
-        int first;
+    private int getIndexOfSide(Side side) {
+        int index;
         switch (side) {
-            case LEFT: first = 0; break;
-            case NEAR: first = 1; break;
-            case RIGHT: first = 2; break;
-            case FAR: first = 3; break;
-            case TOP: first = 4; break;
-            default: first = 5;
+            case LEFT: index = 0; break;
+            case NEAR: index = 1; break;
+            case RIGHT: index = 2; break;
+            case FAR: index = 3; break;
+            case TOP: index = 4; break;
+            default: index = 5;
         }
-        return sixValuesOnSides.get(sidesMain[first][x][y]);
+        return index;
+    }
+
+    public ArrayList<ArrayList<T>> getStateOfSide(Side side) {
+        ArrayList<ArrayList<T>> cellsOfSide = new ArrayList<ArrayList<T>>();
+        for (int i = 0; i < n; i++) {
+            cellsOfSide.add(new ArrayList<T>());
+            for (int j = 0; j < n; j++)
+                cellsOfSide.get(i).add(sixValuesOnSides.get(sidesMain[getIndexOfSide(side)][i][j]));
+        }
+        return cellsOfSide;
+    }
+
+    public T getColor(Side side, int x, int y) {
+        return sixValuesOnSides.get(sidesMain[getIndexOfSide(side)][x][y]);
     }
 
     public int[][][] getSidesForTesting() {
