@@ -17,8 +17,8 @@ public class MainProgram {
         CubeRubikConsole cube = new CubeRubikConsole(3, false,
                 ANSI_RED + "R", ANSI_YELLOW + "Y", ANSI_BLUE + "B", ANSI_PURPLE + "P", ANSI_GREEN + "G", ANSI_WHITE + "W");
         cube.showSidesInConsoleOnBaseOfStateOfSide();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         while (true) {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             System.out.print(ANSI_RESET + "Введите через пробел ось (x,y,z), нач. и кон. слой: ");
             String[] data = reader.readLine().split(" ");
             if ("x".equals(data[0])) cube.rotateClockwise(CubeRubik.Axis.X, Integer.parseInt(data[1]), Integer.parseInt(data[2]));
