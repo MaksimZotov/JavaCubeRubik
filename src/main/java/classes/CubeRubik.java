@@ -7,7 +7,6 @@ public class CubeRubik<T> {
     private int[][][] sidesMain;
     private int[][][] sidesForXRotation, sidesForYRotation, sidesForZRotation;
     private ArrayList<T> sixValuesOnSides;
-    private enum Direction { UP, RIGHT, DOWN, LEFT }
 
     public final int n;
     public enum Axis { X, Y, Z }
@@ -77,68 +76,14 @@ public class CubeRubik<T> {
     }
 
     private void rotateOnlySurface(int[][][] sides, int numberOfSide, int amountOfRotations) {
-        int xMin = 0, yMin = 0, xMax = n - 1, yMax = n - 1;
-        int x = 0, y = 0;
-        int laps = 0;
-        Direction direction = Direction.RIGHT;
         int[][] temp = new int[n][n];
-        for (int i = 0; i < n; i++)
-            for (int j = 0; j < n; j++)
-                temp[i][j] = sides[numberOfSide][i][j];
-        int count = 0;
-        while (count < n * n) {
-            count++;
-            moveCell(sides, temp, numberOfSide, x, y, laps, amountOfRotations);
-            if (direction == Direction.RIGHT) {
-                if (y < yMax) y++;
-                else {
-                    yMax--;
-                    x++;
-                    direction = Direction.DOWN;
-                }
-            }
-            else if (direction == Direction.DOWN) {
-                if (x < xMax) x++;
-                else {
-                    xMax--;
-                    y--;
-                    direction = Direction.LEFT;
-                }
-            }
-            else if (direction == Direction.LEFT) {
-                if (y > yMin) y--;
-                else {
-                    xMin++;
-                    x--;
-                    direction = Direction.UP;
-                }
-            }
-            else {
-                if (x > xMin) x--;
-                else {
-                    yMin++;
-                    y++;
-                    direction = Direction.RIGHT;
-                    laps++;
-                }
-            }
+        for (int amount = 0; amount < amountOfRotations; amount++) {
+            for (int i = 0; i < n; i++)
+                System.arraycopy(sides[numberOfSide][i], 0, temp[i], 0, n);
+            for (int i = 0; i < n; i++)
+                for (int j = 0; j < n; j++)
+                    sides[numberOfSide][i][j] = temp[n - j - 1][i];
         }
-    }
-
-    private void moveCell(int[][][] sides, int[][] temp, int numberOfSide, int x, int y, int laps, int amountOfRotations) {
-        int numberColor = temp[x][y];
-        int xCur = x;
-        int yCur = y;
-        int max = n - laps - 1;
-        int min = laps;
-        int steps = n - laps * 2 - 1;
-        for (int i = 0; i < steps * amountOfRotations; i++) {
-            if (xCur == min && yCur < max) yCur++;
-            else if (yCur == max && xCur < max) xCur++;
-            else if (xCur == max && yCur > min) yCur--;
-            else if (yCur == min && xCur > min) xCur--;
-        }
-        sides[numberOfSide][xCur][yCur] = numberColor;
     }
 
     private void rotatePerpendicularCells(Axis axis, int start, int end) {
@@ -149,17 +94,12 @@ public class CubeRubik<T> {
         int[][][] temp = new int[4][n][n];
         for (int i = 0; i < 4; i++)
             for (int j = 0; j < n; j++)
-                for (int k = 0; k < n; k++)
-                    temp[i][j][k] = sidesForAxisOfRotation[i][j][k];
+                System.arraycopy(sidesForAxisOfRotation[i][j], 0, temp[i][j], 0, n);
         for (int i = 0; i < 3; i++)
             for (int j = start - 1; j < end; j++)
-                for (int k = 0; k < n; k++)
-                    sidesForAxisOfRotation[i + 1][j][k] = temp[i][j][k];
+                System.arraycopy(temp[i][j], 0, sidesForAxisOfRotation[i + 1][j], 0, n);
         for (int j = start - 1; j < end; j++)
-            for (int k = 0; k < n; k++) {
-                sidesForAxisOfRotation[0][j][k] = temp[3][j][k];
-                sidesForAxisOfRotation[3][j][k] = temp[2][j][k];
-            }
+            System.arraycopy(temp[3][j], 0, sidesForAxisOfRotation[0][j], 0, n);
         if (axis == Axis.X) {
             sidesMain[0] = sidesForXRotation[0];
             sidesMain[4] = sidesForXRotation[1];
@@ -192,25 +132,11 @@ public class CubeRubik<T> {
         }
     }
 
-    public void rotateClockwise(Axis axisOfRotation, int start, int end) {
-        if (start < 1 || start > n || end < 1 || end > n || start > end)
-            throw new IllegalArgumentException("Неверно введён интервал для поворота");
-        boolean rotateSurfaceStart = start == 1;
-        boolean rotateSurfaceEnd = end == n;
-        if (axisOfRotation == Axis.X) {
-            if (rotateSurfaceStart) rotateOnlySurface(sidesMain, 1, 1);
-            if (rotateSurfaceEnd) rotateOnlySurface(sidesMain, 3, 1);
-            rotatePerpendicularCells(Axis.X, start, end);
-        } else if (axisOfRotation == Axis.Y) {
-            if (rotateSurfaceStart) rotateOnlySurface(sidesMain, 2, 1);
-            if (rotateSurfaceEnd) rotateOnlySurface(sidesMain, 0,  3);
-            rotatePerpendicularCells(Axis.Y, start, end);
-        } else {
-            if (rotateSurfaceStart) rotateOnlySurface(sidesMain, 4, 1);
-            if (rotateSurfaceEnd) rotateOnlySurface(sidesMain, 5, 3);
-            rotatePerpendicularCells(Axis.Z, start, end);
-        }
-        setSidesForAxisRotation();
+    private void rotate(Axis axis, int start, int end, boolean rotateSurfaceStart, boolean rotateSurfaceEnd,
+                        int numberSurfaceStart, int amountOfRotationsStart, int numberSurfaceEnd, int amountOfRotationsEnd) {
+        if (rotateSurfaceStart) rotateOnlySurface(sidesMain, numberSurfaceStart, amountOfRotationsStart);
+        if (rotateSurfaceEnd) rotateOnlySurface(sidesMain, numberSurfaceEnd, amountOfRotationsEnd);
+        rotatePerpendicularCells(axis, start, end);
     }
 
     private int getIndexOfSide(Side side) {
@@ -224,6 +150,18 @@ public class CubeRubik<T> {
             default: index = 5;
         }
         return index;
+    }
+
+    public void rotateClockwise(Axis axisOfRotation, int start, int end) {
+        if (start < 1 || start > n || end < 1 || end > n || start > end)
+            throw new IllegalArgumentException("Неверно введён интервал для поворота");
+        if (axisOfRotation == Axis.X)
+            rotate(Axis.X, start, end, start == 1,  end == n, 1, 1, 3, 1);
+        else if (axisOfRotation == Axis.Y)
+            rotate(Axis.Y, start, end, start == 1,  end == n, 2, 1, 0, 3);
+        else
+            rotate(Axis.Z, start, end, start == 1,  end == n, 4, 1, 5, 3);
+        setSidesForAxisRotation();
     }
 
     public ArrayList<ArrayList<T>> getStateOfSide(Side side) {

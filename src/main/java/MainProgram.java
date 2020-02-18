@@ -14,7 +14,7 @@ public class MainProgram {
         String ANSI_PURPLE = "\u001B[35m";
         String ANSI_GREEN = "\u001B[36m";
         String ANSI_WHITE = "\u001B[39m";
-        CubeRubikConsole cube = new CubeRubikConsole(3, true,
+        CubeRubikConsole cube = new CubeRubikConsole(3, false,
                 ANSI_RED + "R", ANSI_YELLOW + "Y", ANSI_BLUE + "B", ANSI_PURPLE + "P", ANSI_GREEN + "G", ANSI_WHITE + "W");
         cube.showSidesInConsoleOnBaseOfStateOfSide();
         while (true) {
