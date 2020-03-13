@@ -1,16 +1,15 @@
-package classes;
+package CubeRubikClasses;
 
 import java.util.ArrayList;
 import java.util.Random;
 
 public class CubeRubik<T> {
-    private int[][][] sidesMain;
-    private int[][][] sidesForXRotation, sidesForYRotation, sidesForZRotation;
-    private ArrayList<T> sixValuesOnSides;
-
     public final int n;
     public enum Axis { X, Y, Z }
     public enum Side {  LEFT, NEAR, RIGHT, FAR, TOP, BOTTOM }
+    private int[][][] sidesMain;
+    private int[][][] sidesForXRotation, sidesForYRotation, sidesForZRotation;
+    private ArrayList<T> sixValuesOnSides;
 
     CubeRubik(int n, boolean isRandom, T first, T second, T third, T fourth, T fifth, T sixth) {
         sixValuesOnSides = new ArrayList();

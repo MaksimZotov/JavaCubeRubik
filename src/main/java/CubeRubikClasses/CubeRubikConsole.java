@@ -1,4 +1,4 @@
-package classes;
+package CubeRubikClasses;
 
 import java.util.ArrayList;
 
