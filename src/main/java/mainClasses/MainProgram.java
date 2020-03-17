@@ -1,7 +1,7 @@
-package MainClasses;
+package mainClasses;
 
-import CubeRubikClasses.CubeRubik;
-import CubeRubikClasses.CubeRubikConsole;
+import cubeRubikClasses.CubeRubik;
+import cubeRubikClasses.CubeRubikConsole;
 
 import java.io.BufferedReader;
 import java.io.IOException;
